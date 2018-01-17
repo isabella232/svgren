@@ -1,22 +1,9 @@
-# svgren [![releases](https://img.shields.io/github/tag/igagis/svgren.svg)](https://github.com/igagis/svgren/releases) [![Build Status](https://travis-ci.org/igagis/svgren.svg?branch=master)](https://travis-ci.org/igagis/svgren) [![Build status](https://ci.appveyor.com/api/projects/status/6ilonof8aqcjryoi/branch/master?svg=true)](https://ci.appveyor.com/project/igagis/svgren/branch/master)
+README
 
-
-
-SVG renderer library in C++.
-
-![image sample](wiki/camera.png)
-
-- full gradient support
-- group opacity
-- all shapes support
-- all path elements support
-- render to memory
-- gaussian blur effect support
-
-**svgren** uses **[svgdom](https://github.com/igagis/svgdom)** to read the SVG file and **[cairo](http://cairographics.org)** to render graphics.
-
-# Installation and Tutorials
-Read [WiKi](wiki/MainPage.md) for installation instructions and tutorials.
-
-# Questions
-In case of questions, please submit those as [Issue](https://github.com/igagis/svgren/issues).
+Building for ios-simulator/iphone-os :
+    - pod install in ios folder
+    - compile in release for simulator
+    - compile in release for iphone-os
+    - run build.sh script (lipo all the binaries into universal version)
+    - copie all the .a generates into the transitLib/svgren root folder.
+    - update includes if needed.
