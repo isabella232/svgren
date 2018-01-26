@@ -1,5 +1,5 @@
-DIST_DIR_IPHONEOS=src/ios/Build/Products/Release-iphoneos
-DIST_DIR_IPHONESIM=src/ios/Build/Products/Release-iphonesimulator
+DIST_DIR_IPHONEOS=ios/Build/Products/Release-iphoneos
+DIST_DIR_IPHONESIM=ios/Build/Products/Release-iphonesimulator
 
 declare -a lib_names=("liblibsvgren.a" "liblibcairo.a" "liblibmikroxml.a" "liblibpapki.a" "liblibpixman.a" "liblibpng_igagis.a" "liblibsvgdom.a" "liblibunikod.a")
 declare -a folder_names=("libsvgren" "libcairo" "libmikroxml" "libpapki" "libpixman" "libpng_igagis" "libsvgdom" "libunikod")
