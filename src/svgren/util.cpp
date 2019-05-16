@@ -24,15 +24,20 @@ void svgren::cairoRelQuadraticCurveTo(cairo_t *cr, double x1, double y1, double 
 			x,
 			y
 		);
+	ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 }
 
 void svgren::cairoQuadraticCurveTo(cairo_t *cr, double x1, double y1, double x, double y){
 	double x0, y0; //current point, absolute coordinates
 	if (cairo_has_current_point(cr)) {
+		ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 		cairo_get_current_point(cr, &x0, &y0);
+		ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 	}
 	else {
+		ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 		cairo_move_to(cr, 0, 0);
+		ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 		x0 = 0;
 		y0 = 0;
 	}
@@ -44,18 +49,7 @@ void svgren::cairoQuadraticCurveTo(cairo_t *cr, double x1, double y1, double x, 
 			x,
 			y
 		);
-}
-
-real svgren::degToRad(real deg){
-	return deg * utki::pi<real>() / real(180);
-}
-
-std::array<real, 2> svgren::rotate(real x, real y, real angle){
-    return {{x * std::cos(angle) - y * std::sin(angle), y * std::cos(angle) + x * std::sin(angle)}};
-}
-
-real svgren::pointAngle(real cx, real cy, real px, real py){
-    return std::atan2(py - cy, px - cx);
+	ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 }
 
 CairoContextSaveRestore::CairoContextSaveRestore(cairo_t* cr) :
@@ -65,15 +59,15 @@ CairoContextSaveRestore::CairoContextSaveRestore(cairo_t* cr) :
 	cairo_save(this->cr);
 }
 
+CairoContextSaveRestore::~CairoContextSaveRestore()noexcept{
+	cairo_restore(this->cr);
+}
+
 CairoMatrixSaveRestore::CairoMatrixSaveRestore(cairo_t* cr) :
 		cr(cr)
 {
 	ASSERT(this->cr)
 	cairo_get_matrix(this->cr, &this->m);
-}
-
-CairoContextSaveRestore::~CairoContextSaveRestore()noexcept{
-	cairo_restore(this->cr);
 }
 
 CairoMatrixSaveRestore::~CairoMatrixSaveRestore()noexcept{
@@ -101,7 +95,7 @@ Surface svgren::getSubSurface(cairo_t* cr, const CanvasRegion& region){
 	ret.y = region.y;
 	
 	ASSERT(ret.height <= sh)
-	ASSERT(&ret.data[ret.stride * (ret.height - 1) * sizeof(std::uint32_t)] < ret.end)
+	ASSERT(&ret.data[ret.stride * (ret.height - 1) * sizeof(std::uint32_t)] < ret.end || ret.height == 0)
 
 	return ret;
 }
@@ -169,11 +163,9 @@ ViewportPush::~ViewportPush() noexcept{
 }
 
 
-PushCairoGroupIfNeeded::PushCairoGroupIfNeeded(Renderer& renderer) :
+PushCairoGroupIfNeeded::PushCairoGroupIfNeeded(Renderer& renderer, bool isContainer) :
 		renderer(renderer)
 {
-	auto opacityP = this->renderer.styleStack.getStyleProperty(svgdom::StyleProperty_e::OPACITY);
-	
 	auto backgroundP = this->renderer.styleStack.getStyleProperty(svgdom::StyleProperty_e::ENABLE_BACKGROUND);
 	
 	if(backgroundP && backgroundP->enableBackground.value == svgdom::EnableBackground_e::NEW){
@@ -188,7 +180,31 @@ PushCairoGroupIfNeeded::PushCairoGroupIfNeeded(Renderer& renderer) :
 		}
 	}
 	
-	this->groupPushed = (opacityP && opacityP->opacity < svgdom::real(1)) || filterP || this->maskElement || this->oldBackground.data;
+	this->groupPushed = filterP || this->maskElement || this->oldBackground.data;
+
+	auto opacity = svgdom::real(1);
+	{
+		auto strokeP = this->renderer.styleStack.getStyleProperty(svgdom::StyleProperty_e::STROKE);
+		auto fillP = this->renderer.styleStack.getStyleProperty(svgdom::StyleProperty_e::FILL);
+
+		//OPTIMIZATION: if opacity is set on an element then push cairo group only in case it is a Container element, like 'g' or 'svg',
+		//              or in case the fill or stroke is a non-solid color, like gradient or pattern,
+		//				or both fill and stroke are non-none.
+		//              If element is non-container and one of stroke or fill is solid color and other one is none,
+		//              then opacity will be applied later without pushing cairo group.
+		if(this->groupPushed
+				|| isContainer
+				|| (strokeP && strokeP->isUrl())
+				|| (fillP && fillP->isUrl())
+				|| (fillP && strokeP && !fillP->isNone() && !strokeP->isNone())
+			)
+		{
+			if(auto p = this->renderer.styleStack.getStyleProperty(svgdom::StyleProperty_e::OPACITY)){
+				opacity = p->opacity;
+				this->groupPushed = this->groupPushed || opacity < 1;
+			}
+		}
+	}
 	
 	if(this->groupPushed){
 //		TRACE(<< "setting temp context" << std::endl)
@@ -197,9 +213,7 @@ PushCairoGroupIfNeeded::PushCairoGroupIfNeeded(Renderer& renderer) :
 			throw utki::Exc("cairo_push_group() failed");
 		}
 		
-		if(opacityP){
-			this->opacity = opacityP->opacity;
-		}
+		this->opacity = opacity;
 	}
 	
 	if(this->oldBackground.data){
@@ -259,7 +273,12 @@ PushCairoGroupIfNeeded::~PushCairoGroupIfNeeded()noexcept{
 	if(mask){
 		cairo_mask(this->renderer.cr, mask);
 	}else{
-		cairo_paint_with_alpha(this->renderer.cr, this->opacity);
+		ASSERT(0 <= this->opacity && this->opacity <= 1)
+		if(this->opacity < svgdom::real(1)){
+			cairo_paint_with_alpha(this->renderer.cr, this->opacity);
+		}else{
+			cairo_paint(this->renderer.cr);
+		}
 	}
 	
 	//restore background if it was pushed

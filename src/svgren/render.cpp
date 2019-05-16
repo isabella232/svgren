@@ -11,18 +11,6 @@
 using namespace svgren;
 
 
-
-std::vector<std::uint32_t> svgren::render(const svgdom::SvgElement& svg, unsigned& width, unsigned& height, real dpi, bool bgra){
-	Parameters p;
-	p.widthRequest = width;
-	p.heightRequest = height;
-	p.dpi = dpi;
-	p.bgra = bgra;
-	auto r = render(svg, p);
-	width = r.width;
-	height = r.height;
-	return std::move(r.pixels);
-}
 	
 Result svgren::render(const svgdom::SvgElement& svg, const Parameters& p){
 	Result ret;
@@ -77,10 +65,6 @@ Result svgren::render(const svgdom::SvgElement& svg, const Parameters& p){
 #endif
 	}
 	
-	utki::ScopeExit scopeExitCairoReset([]{
-		cairo_debug_reset_static_data();
-	});
-	
 	cairo_surface_t* surface = cairo_image_surface_create_for_data(
 			reinterpret_cast<unsigned char*>(&*ret.pixels.begin()),
 			CAIRO_FORMAT_ARGB32,
@@ -106,6 +90,7 @@ Result svgren::render(const svgdom::SvgElement& svg, const Parameters& p){
 	});
 	
 	cairo_scale(cr, real(ret.width) / wh[0], real(ret.height) / wh[1]);
+	ASSERT(cairo_status(cr) == CAIRO_STATUS_SUCCESS)
 	
 	Renderer r(cr, p.dpi, {{wh[0], wh[1]}}, svg);
 	

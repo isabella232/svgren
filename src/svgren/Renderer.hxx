@@ -62,7 +62,7 @@ public:
 	
 	void updateCurBoundingBox();
 	
-	void renderCurrentShape();
+	void renderCurrentShape(bool isCairoGroupPushed);
 	
 	void applyViewBox(const svgdom::ViewBoxed& e, const svgdom::AspectRatioed& ar);
 	
@@ -76,6 +76,9 @@ public:
 			const svgdom::Length& width,
 			const svgdom::Length& height
 		);
+	
+	const decltype(svgdom::Transformable::transformations)& gradientGetTransformations(const svgdom::Gradient& g);
+	svgdom::CoordinateUnits_e gradientGetUnits(const svgdom::Gradient& g);
 	
 	svgdom::Length gradientGetX1(const svgdom::LinearGradientElement& g);
 	svgdom::Length gradientGetY1(const svgdom::LinearGradientElement& g);
@@ -93,6 +96,7 @@ public:
 	svgdom::Gradient::SpreadMethod_e gradientGetSpreadMethod(const svgdom::Gradient& g);
 	
 	bool isInvisible();
+	bool isGroupInvisible();
 	
 public:
 	Renderer(

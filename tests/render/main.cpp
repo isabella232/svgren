@@ -116,128 +116,6 @@ int main(int argc, char **argv){
             break;
     }
     
-    std::vector<std::string> filenamesString = {
-        "amat-m1",
-        "amat-m3",
-        "amat-m5",
-        "amt-train",
-        "amt-train",
-        "amt-train",
-        "atac-fr1",
-        "atac-fr2",
-        "atac-fr3",
-        "atac-fr4",
-        "atac-fr5",
-        "atac-fr6",
-        "atac-fr7",
-        "atac-fr8",
-        "austin-metro-rail",
-        "austin-metro-rail",
-        "austin-metro-rail",
-        "caltrain",
-        "caltrain",
-        "caltrain",
-        "dcc",
-        "dcc",
-        "dcc",
-        "hvv-a1",
-        "hvv-a2",
-        "hvv-a3",
-        "hvv-ferry",
-        "hvv-ferry",
-        "hvv-ferry",
-        "hvv-s1",
-        "hvv-s21",
-        "hvv-s3",
-        "hvv-s31",
-        "hvv-u3",
-        "hvv-u3",
-        "hvv-u3",
-        "la-metro",
-        "la-metro",
-        "la-metro",
-        "miami-rail",
-        "miami-rail",
-        "miami-rail",
-        "muni-bullet-k2",
-        "muni-bullet-l",
-        "muni-bullet-m",
-        "muni-bullet-n",
-        "muni-bullet-t2",
-        "muni-cablecar-full",
-        "muni-cablecar-full",
-        "muni-cablecar-full",
-        "path",
-        "path",
-        "path",
-        "ratp-a",
-        "ratp-b",
-        "ratp-c",
-        "ratp-metro-10-v2",
-        "ratp-metro-3bis-v2",
-        "ratp-metro-3bis-v2",
-        "ratp-metro-5-v2",
-        "ratp-metro-6-v2",
-        "ratp-metro-7-v2",
-        "ratp-metro-7bis-v2",
-        "ratp-metro-8-v2",
-        "ratp-metro-9-v2",
-        "ratp-rer-a",
-        "ratp-rer-b",
-        "skytrain",
-        "skytrain",
-        "skytrain",
-        "sncf-transilien-h",
-        "sncf-transilien-j",
-        "sncf-transilien-k",
-        "sncf-transilien-l",
-        "sncf-transilien-n",
-        "sncf-transilien-p",
-        "sncf-transilien-r",
-        "sncf-transilien-u",
-        "stif-tram-1-logo",
-        "stif-tram-2-logo",
-        "stif-tram-3a-logo",
-        "stif-tram-3b-logo",
-        "stif-tram-4-logo",
-        "stif-tram-5-logo",
-        "stif-tram-6-logo",
-        "stif-tram-7-logo",
-        "stif-tram-8-logo",
-        "stif-tram-logo",
-        "tcl-bus-r1",
-        "tcl-bus-r2",
-        "tcl-bus-r3",
-        "tcl-bus-r5",
-        "tcl-bus-zi8",
-        "tcl-bus-zi8",
-        "tcl-bus-zi8",
-        "tcl-resago-logo",
-        "tcl-resago-logo",
-        "tcl-resago-logo",
-        "trenit-s-s1",
-        "trenit-s-s10",
-        "trenit-s-s11",
-        "trenit-s-s13",
-        "trenit-s-s2",
-        "trenit-s-s3",
-        "trenit-s-s3",
-        "trenit-s-s3",
-        "trenit-s-s4",
-        "trenit-s-s5",
-        "trenit-s-s6",
-        "trenit-s-s8",
-        "trenit-s-s9",
-        "ttc-subway-2",
-        "vbb-ferry",
-    };
-    
-    std::string prefix = "/Users/gdorion/Documents/Code/Transit/svg_images/download/";
-    
-    for (std::string s : filenamesString) {
-        filename = prefix + s + ".svg";
-        outFilename = "/Users/gdorion/Documents/Code/Transit/svg_images/pngs/" + s + ".png";
-        
         auto loadStart = getTicks();
         
         auto dom = svgdom::load(papki::FSFile(filename));
@@ -248,73 +126,78 @@ int main(int argc, char **argv){
         
         auto renderStart = getTicks();
         
-        unsigned imWidth = 0;
-        unsigned imHeight = 0;
-        auto img = svgren::render(*dom, imWidth, imHeight);
-        
-        TRACE(<< "SVG rendered in " << float(getTicks() - renderStart) / 1000.0f << " sec." << std::endl)
-        
-        TRACE(<< "imWidth = " << imWidth << " imHeight = " << imHeight << " img.size() = " << img.size() << std::endl)
-        
-        writePng(outFilename.c_str(), imWidth, imHeight, &*img.begin());
-        
-        
+	auto img = svgren::render(*dom);
+	
+	TRACE(<< "SVG rendered in " << float(getTicks() - renderStart) / 1000.0f << " sec." << std::endl)
+	
+	TRACE(<< "imWidth = " << img.width << " imHeight = " << img.height << " img.size() = " << img.pixels.size() << std::endl)
+
+	writePng(outFilename.c_str(), img.width, img.height, &*img.pixels.begin());
+
+	
 #if M_OS == M_OS_LINUX
-        int width = imWidth + 2;
-        int height = imHeight + 2;
-        
-        Display *display = XOpenDisplay(NULL);
-        
-        Visual *visual = DefaultVisual(display, 0);
-        
-        Window window = XCreateSimpleWindow(display, RootWindow(display, 0), 0, 0, width, height, 1, 0, 0);
-        
-        if(visual->c_class != TrueColor){
-            TRACE_ALWAYS(<< "Cannot handle non true color visual ...\n" << std::endl)
-            return 1;
-        }
-        
-        XSelectInput(display, window, ButtonPressMask|ExposureMask);
-        
-        XMapWindow(display, window);
-        
-        while(true){
-            XEvent ev;
-            XNextEvent(display, &ev);
-            switch(ev.type)
-            {
-                case Expose:
-                {
-                    int dummyInt;
-                    unsigned dummyUnsigned;
-                    Window dummyWindow;
-                    unsigned imWidth = 0;
-                    unsigned imHeight = 0;
-                    
-                    XGetGeometry(display, window, &dummyWindow, &dummyInt, &dummyInt, &imWidth, &imHeight, &dummyUnsigned, &dummyUnsigned);
+	int width = img.width + 2;
+	int height = img.height + 2;
+
+	Display *display = XOpenDisplay(NULL);
+	
+	Visual *visual = DefaultVisual(display, 0);
+	
+	Window window = XCreateSimpleWindow(display, RootWindow(display, 0), 0, 0, width, height, 1, 0, 0);
+	
+	if(visual->c_class != TrueColor){
+		TRACE_ALWAYS(<< "Cannot handle non true color visual ...\n" << std::endl)
+		return 1;
+	}	
+	
+	XSelectInput(display, window, ButtonPressMask|ExposureMask);
+	
+	XMapWindow(display, window);
+	
+	while(true){
+		XEvent ev;
+		XNextEvent(display, &ev);
+		switch(ev.type)
+		{
+		case Expose:
+			{
+				int dummyInt;
+				unsigned dummyUnsigned;
+				Window dummyWindow;
+				unsigned winWidth = 0;
+				unsigned winHeight = 0;
+				
+				XGetGeometry(display, window, &dummyWindow, &dummyInt, &dummyInt, &winWidth, &winHeight, &dummyUnsigned, &dummyUnsigned);
                     
                     imWidth = std::max(int(imWidth) - 2, 0);
                     imHeight = std::max(int(imHeight) - 2, 0);
                     
-                    //                TRACE(<< "imWidth = " << imWidth << " imHeight = " << imHeight << std::endl)
-                    
-                    auto img = svgren::render(*dom, imWidth, imHeight);
-                    
-                    //                TRACE(<< "imWidth = " << imWidth << " imHeight = " << imHeight << " img.size() = " << img.size() << std::endl)
-                    
-                    auto ximage = XCreateImage(display, visual, 24, ZPixmap, 0, reinterpret_cast<char*>(&*img.begin()), imWidth, imHeight, 8, 0);
-                    utki::ScopeExit scopeexit([ximage](){
-                        ximage->data = nullptr;//Xlib will try to deallocate data which is owned by 'img' variable.
-                        XDestroyImage(ximage);
-                    });
-                    
-                    XPutImage(display, window, DefaultGC(display, 0), ximage, 0, 0, 1, 1, imWidth, imHeight);
-                }
-                    break;
-                case ButtonPress:
-                    exit(0);
-            }
-        }
+//				TRACE(<< "imWidth = " << imWidth << " imHeight = " << imHeight << std::endl)
+				
+				using std::max;
+				
+				svgren::Parameters p;
+				p.bgra = true;
+				p.dpi = 96;
+				p.widthRequest = max(int(winWidth) - 2, 0);
+				p.heightRequest = max(int(winHeight) - 2, 0);
+				auto img = svgren::render(*dom, p);
+
+//				TRACE(<< "imWidth = " << imWidth << " imHeight = " << imHeight << " img.size() = " << img.size() << std::endl)
+				
+				auto ximage = XCreateImage(display, visual, 24, ZPixmap, 0, reinterpret_cast<char*>(&*img.pixels.begin()), img.width, img.height, 8, 0);
+				utki::ScopeExit scopeexit([ximage](){
+					ximage->data = nullptr;//Xlib will try to deallocate data which is owned by 'img' variable.
+					XDestroyImage(ximage);
+				});
+				
+				XPutImage(display, window, DefaultGC(display, 0), ximage, 0, 0, 1, 1, img.width, img.height);
+			}
+			break;
+		case ButtonPress:
+			exit(0);
+		}
+	}
 #endif
     }
     
@@ -322,5 +205,3 @@ int main(int argc, char **argv){
     
     TRACE_ALWAYS(<< "[PASSED]" << std::endl)
 }
-
-
