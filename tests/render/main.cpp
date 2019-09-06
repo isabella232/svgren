@@ -203,5 +203,5 @@ int main(int argc, char **argv){
     
     
     
-    TRACE_ALWAYS(<< "[PASSED]" << std::endl)
-}
+//    TRACE_ALWAYS(<< "[PASSED]" << std::endl)
+//}
