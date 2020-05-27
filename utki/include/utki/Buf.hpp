@@ -219,8 +219,8 @@ public:
 
 
 
-	friend std::ostream& operator<<(std::ostream& s, const Buf<T>& buf){
-		for(auto& e : buf){
+	friend std::ostream& operator<<(std::ostream& s, const Buf<T>& buffer){
+		for(auto& e : buffer){
 			s << e;
 		}
 		return s;
