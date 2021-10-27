@@ -1,0 +1,21 @@
+[submodule "utki"]
+	path = utki
+	url = git@github.com:lapfelix/utki.git
+[submodule "svgdom"]
+	path = svgdom
+	url = git@github.com:lapfelix/svgdom.git
+[submodule "agg"]
+	path = agg
+	url = git@github.com:lapfelix/agg.git
+[submodule "cssom"]
+	path = cssom
+	url = git@github.com:lapfelix/cssom.git
+[submodule "papki"]
+	path = papki
+	url = git@github.com:lapfelix/papki.git
+[submodule "mikroxml"]
+	path = mikroxml
+	url = git@github.com:lapfelix/mikroxml.git
+[submodule "r4"]
+	path = r4
+	url = git@github.com:lapfelix/r4.git
