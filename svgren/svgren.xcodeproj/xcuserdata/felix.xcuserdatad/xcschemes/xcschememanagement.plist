@@ -6,43 +6,57 @@
 	<dict>
 		<key>agg.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
-			<integer>14</integer>
+			<integer>53</integer>
 		</dict>
 		<key>cssom.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
-			<integer>12</integer>
+			<integer>48</integer>
 		</dict>
 		<key>mikroxml.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
-			<integer>13</integer>
+			<integer>56</integer>
 		</dict>
 		<key>papki.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
-			<integer>11</integer>
+			<integer>55</integer>
 		</dict>
 		<key>r4.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
-			<integer>7</integer>
+			<integer>49</integer>
 		</dict>
 		<key>svgdom.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
-			<integer>9</integer>
+			<integer>54</integer>
 		</dict>
 		<key>svgren.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
 		<key>utki.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>4</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -53,6 +67,36 @@
 			<true/>
 		</dict>
 		<key>DC6CBC6B27299AA100DD2F8F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6CBCB727299B3000DD2F8F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6CBCCF27299B6800DD2F8F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6CBD5127299BF200DD2F8F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6CBD8527299CC400DD2F8F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6CBDA627299FA600DD2F8F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6CBEC32729A54900DD2F8F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
